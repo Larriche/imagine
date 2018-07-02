@@ -51,6 +51,7 @@ class ImageDownloader:
             url, extension = json.loads(a.text)["ou"]  ,json.loads(a.text)["ity"]
             image_urls.append((str(url), str(extension)))
 
+        quantity = min(quantity, len(image_urls))
         chosen = random.sample(image_urls, quantity)
 
         return chosen
