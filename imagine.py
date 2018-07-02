@@ -25,6 +25,7 @@ def main():
     downloader = ImageDownloader(browser, query, count)
 
     try:
+        print 'Bringing your imaginations to reality...'
         downloader.download_images(count)
     except KeyboardInterrupt:
         print '\nBye. See you soon :)'
