@@ -7,7 +7,7 @@ def main():
     # Set up commandline arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('query', help='item to download images for')
-    parser.add_argument('-c', '--count', action='count', help='number of images to download', default=20)
+    parser.add_argument('count', help='number of images to download', default=20)
 
     # Set up browser
     browser = mechanize.Browser()
@@ -19,7 +19,7 @@ def main():
     args = parser.parse_args()
 
     query = args.query
-    count = args.count
+    count = int(args.count)
 
     # Run downloads
     downloader = ImageDownloader(browser, query, count)
