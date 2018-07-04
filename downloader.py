@@ -6,7 +6,7 @@ import random
 from bs4 import BeautifulSoup
 
 class ImageDownloader:
-    def __init__(self, browser, query, count):
+    def __init__(self, browser, query):
         """
         Create a new instance of this class
         """
@@ -19,14 +19,11 @@ class ImageDownloader:
         # Downloads folder
         self.folder = 'downloads/{}'.format(query)
 
-        # Number of items to download
-        self.count = count
-
         # Create downloads folder
         if not os.path.exists(self.folder):
             os.makedirs(self.folder)
 
-    def download_images(self, quantity):
+    def download_images(self, quantity, extension):
         """
         Download images from Google
         """

@@ -8,6 +8,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('query', help='item to download images for')
     parser.add_argument('count', help='number of images to download', default=20)
+    parser.add_argument('type', help='extension to save images as', default='jpg')
 
     # Set up browser
     browser = mechanize.Browser()
@@ -20,13 +21,14 @@ def main():
 
     query = args.query
     count = int(args.count)
+    extension = args.type
 
     # Run downloads
-    downloader = ImageDownloader(browser, query, count)
+    downloader = ImageDownloader(browser, query)
 
     try:
         print 'Bringing your imaginations to reality...'
-        downloader.download_images(count)
+        downloader.download_images(count, extension)
     except KeyboardInterrupt:
         print '\nBye. See you soon :)'
         sys.exit(0)
