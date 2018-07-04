@@ -32,9 +32,8 @@ class ImageDownloader:
 
         image_urls = self.get_image_urls(html, quantity)
 
-        for index, image_url in enumerate(image_urls):
-            url, ext = image_url
-            save_path = self.folder + "/image_{}.{}".format(str(index + 1), ext)
+        for index, url in enumerate(image_urls):
+            save_path = self.folder + "/image_{}.{}".format(str(index + 1), extension)
             urllib.urlretrieve (url, save_path)
 
     def get_image_urls(self, html, quantity):
@@ -45,8 +44,8 @@ class ImageDownloader:
         image_urls = []
 
         for a in soup.find_all("div", {"class":"rg_meta"}):
-            url, extension = json.loads(a.text)["ou"]  ,json.loads(a.text)["ity"]
-            image_urls.append((str(url), str(extension)))
+            url = json.loads(a.text)["ou"]
+            image_urls.append(str(url))
 
         quantity = min(quantity, len(image_urls))
         chosen = random.sample(image_urls, quantity)
