@@ -15,7 +15,7 @@ class ImageDownloader:
         # Mechanize browser instance
         self.browser = browser
 
-        # URL template for google image searches
+        # Google image search url built from query
         self.url = 'https://www.google.com.gh/search?q={}&tbm=isch'.format(urllib.quote_plus(query))
 
         # Downloads folder
@@ -64,7 +64,6 @@ class ImageDownloader:
                 image_data = io.BytesIO(res.read())
                 image = Image.open(image_data)
                 image.save(save_path, self.image_type_map[extension])
-
             except mechanize.HTTPError as http_error:
                 self.print_http_error(http_error)
             except mechanize.URLError as url_error:
