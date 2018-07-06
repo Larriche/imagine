@@ -47,31 +47,40 @@ class ImageDownloader:
             res = self.browser.open(self.url)
             html = res.read()
         except mechanize.HTTPError as http_error:
-            self.print_http_error(http_error)
+            self.print_http_error(http_error, exiting=True)
         except mechanize.URLError as url_error:
-            self.print_url_error(url_error)
+            self.print_url_error(url_error, exiting=True)
         finally:
             if not html:
                 return
 
-        image_urls = self.get_image_urls(html, quantity)
+        image_urls = self.get_image_urls(html)
 
-        for index, url in enumerate(image_urls):
-            save_path = self.folder + "/image_{}.{}".format(str(index + 1), extension)
+        # Truncate quantity if needed to fit within results count
+        quantity = min(quantity, len(image_urls))
+        downloaded = 0
+
+        while (downloaded < quantity) and len(image_urls):
+            save_path = self.folder + "/image_{}.{}".format(str(downloaded + 1), extension)
+            url = image_urls.pop()
 
             try:
                 res = self.browser.open(url)
                 image_data = io.BytesIO(res.read())
                 image = Image.open(image_data)
                 image.save(save_path, self.image_type_map[extension])
+                downloaded += 1
+                print '{} images downloaded.'.format(str(downloaded))
             except mechanize.HTTPError as http_error:
                 self.print_http_error(http_error)
             except mechanize.URLError as url_error:
                 self.print_url_error(url_error)
+            except Exception as e:
+                self.print_image_error()
 
-    def get_image_urls(self, html, quantity):
+    def get_image_urls(self, html):
         """
-        Select n images at random as candidates for download
+        Extract image urls from search results
         """
         soup = BeautifulSoup(html, "html.parser")
         image_urls = []
@@ -80,19 +89,32 @@ class ImageDownloader:
             url = json.loads(a.text)["ou"]
             image_urls.append(str(url))
 
-        quantity = min(quantity, len(image_urls))
-        chosen = random.sample(image_urls, quantity)
+        return image_urls
 
-        return chosen
-
-    def print_http_error(self, error):
+    def print_http_error(self, error, exiting=False):
         """
         Print an error message for http errors
         """
-        print "Encountered an HTTP error with status code {} :(".format(error.code)
+        message = "Encountered an HTTP error with status code {} :(".format(error.code)
 
-    def print_url_error(self, error):
+        if exiting:
+            message += "\nPlease try again."
+
+        print message
+
+    def print_url_error(self, error, exiting=False):
         """
         Print an error message for URL errors
         """
-        print "Unable to download images :(\nPlease try again"
+        message = "Unable to download images :("
+
+        if exiting:
+            message += "\nPlease try again"
+
+        print message
+
+    def print_image_error(self):
+        """
+        Print an error message for errors occurring during download and save of image
+        """
+        print "An error occurred while saving image. Image skipped"
