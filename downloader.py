@@ -1,8 +1,10 @@
+import io
 import os
 import json
-import mechanize
-import urllib
 import random
+import urllib
+import mechanize
+from PIL import Image
 from bs4 import BeautifulSoup
 
 class ImageDownloader:
@@ -27,14 +29,34 @@ class ImageDownloader:
         """
         Download images from Google
         """
-        res = self.browser.open(self.url)
-        html = res.read()
+        html = ""
+
+        try:
+            res = self.browser.open(self.url)
+            html = res.read()
+        except mechanize.HTTPError as http_error:
+            self.print_http_error(http_error)
+        except mechanize.URLError as url_error:
+            self.print_url_error(url_error)
+        finally:
+            if not html:
+                return
 
         image_urls = self.get_image_urls(html, quantity)
 
         for index, url in enumerate(image_urls):
             save_path = self.folder + "/image_{}.{}".format(str(index + 1), extension)
-            urllib.urlretrieve (url, save_path)
+
+            try:
+                res = self.browser.open(url)
+                image_data = io.BytesIO(res.read())
+                image = Image.open(image_data)
+                image.save(save_path, 'JPEG')
+
+            except mechanize.HTTPError as http_error:
+                self.print_http_error(http_error)
+            except mechanize.URLError as url_error:
+                self.print_url_error(url_error)
 
     def get_image_urls(self, html, quantity):
         """
@@ -51,3 +73,15 @@ class ImageDownloader:
         chosen = random.sample(image_urls, quantity)
 
         return chosen
+
+    def print_http_error(self, error):
+        """
+        Print an error message for http errors
+        """
+        print "Encountered an HTTP error with status code {} :(".format(error.code)
+
+    def print_url_error(self, error):
+        """
+        Print an error message for URL errors
+        """
+        print "Unable to download images :(\nPlease try again"
