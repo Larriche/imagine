@@ -8,7 +8,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('query', help='item to download images for')
     parser.add_argument('count', help='number of images to download', default=20)
-    parser.add_argument('type', help='extension to save images as', default='jpg')
+    parser.add_argument('type', help='extension to save images as')
 
     # Set up browser
     browser = mechanize.Browser()

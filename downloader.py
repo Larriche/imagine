@@ -21,6 +21,14 @@ class ImageDownloader:
         # Downloads folder
         self.folder = 'downloads/{}'.format(query)
 
+        # Mapping of given extensions to mime types
+        self.image_type_map = {
+            'jpg': 'JPEG',
+            'png': 'PNG',
+            'bmp': 'BMP',
+            'gif': 'GIF'
+        }
+
         # Create downloads folder
         if not os.path.exists(self.folder):
             os.makedirs(self.folder)
@@ -30,6 +38,10 @@ class ImageDownloader:
         Download images from Google
         """
         html = ""
+
+        if not extension in self.image_type_map:
+            extension = 'jpg'
+            print 'Unsupported image extension. Images will be saved in jpg format'
 
         try:
             res = self.browser.open(self.url)
@@ -51,7 +63,7 @@ class ImageDownloader:
                 res = self.browser.open(url)
                 image_data = io.BytesIO(res.read())
                 image = Image.open(image_data)
-                image.save(save_path, 'JPEG')
+                image.save(save_path, self.image_type_map[extension])
 
             except mechanize.HTTPError as http_error:
                 self.print_http_error(http_error)
