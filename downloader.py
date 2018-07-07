@@ -1,7 +1,6 @@
 import io
 import os
 import json
-import random
 import urllib
 import mechanize
 from PIL import Image
