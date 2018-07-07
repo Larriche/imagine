@@ -69,7 +69,7 @@ class ImageDownloader:
                 image = Image.open(image_data)
                 image.save(save_path, self.image_type_map[extension])
                 downloaded += 1
-                print '{} images downloaded.'.format(str(downloaded))
+                self.print_status(downloaded, quantity)
             except mechanize.HTTPError as http_error:
                 self.print_http_error(http_error)
             except mechanize.URLError as url_error:
@@ -117,3 +117,9 @@ class ImageDownloader:
         Print an error message for errors occurring during download and save of image
         """
         print "An error occurred while saving image. Image skipped"
+
+    def print_status(self, downloaded, quantity):
+        """
+        Print status of downloads so far
+        """
+        print '{} out of {} images downloaded'.format(str(downloaded), str(quantity))
